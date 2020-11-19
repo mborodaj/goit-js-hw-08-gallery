@@ -12,19 +12,7 @@ refs.imageGallery.addEventListener('click', onImageClick)
 refs.closeButton.addEventListener('click', closeModal)
 refs.modalOverlay.addEventListener('click', closeModal)
 
-window.addEventListener('keydown', event => {
-    if (event.code === 'Escape') {
-        closeModal()
-    }
-    if (event.code === 'ArrowRight') {
-        switchToNext()
-    }
-    if (event.code === 'ArrowLeft') {
-        switchToPrev()
-    }
-})
-
-const createGalleryItem = (element) => {
+const createGalleryItem = (element, index) => {
 
     const galleryItem = document.createElement('li')
     galleryItem.setAttribute('class', 'gallery__item')
@@ -37,7 +25,9 @@ const createGalleryItem = (element) => {
     galleryImage.setAttribute('src', element.original)
     galleryImage.setAttribute('data-source', element.preview)
     galleryImage.setAttribute('alt', element.description)
-    galleryImage.setAttribute('data-position', photoArray.indexOf(element))
+    galleryImage.setAttribute('data-position', index)
+
+    console.log(galleryImage.dataset.position);
 
     galleryLink.appendChild(galleryImage)
     galleryItem.appendChild(galleryLink)
@@ -48,18 +38,35 @@ const createGalleryItem = (element) => {
 const elements = photoArray.map(createGalleryItem)
 refs.imageGallery.append(...elements)
 
-function onImageClick(event) {
-    refs.modalWindow.classList.add('is-open')
+function addEvent(event) {
+    if (event.code === 'Escape') {
+        closeModal()
+    }
+    if (event.code === 'ArrowRight') {
+        switchToNext()
+    }
+    if (event.code === 'ArrowLeft') {
+        switchToPrev()
+    }
+}
 
+function onImageClick(event) {
+    
     if (event.target.nodeName !== 'IMG') {
         return
     }
     
+    window.addEventListener('keydown', addEvent)
+
+    refs.modalWindow.classList.add('is-open')
     refs.modalImage.src = event.target.src;
     refs.modalImage.dataset.position = event.target.dataset.position
 }
 
 function closeModal() {
+
+    window.removeEventListener('keydown', addEvent)
+    
     refs.modalWindow.classList.remove('is-open')
     refs.modalImage.src = ''
 }
